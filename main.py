@@ -27,7 +27,7 @@ def createconfig():
     config = configparser.ConfigParser()
     config.read("config.ini")
     huebridge = config['HUEBRIDGE']
-    if config['HUEBRIDGE']['ip'] is None:
+    if "ip" not in config["HUEBRIDGE"]:
         print("huts")
 
 
