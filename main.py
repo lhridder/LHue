@@ -5,8 +5,7 @@ import sys
 import time
 import csv
 
-
-import requests
+from pip._vendor import requests
 
 ip = ""
 key = ""
@@ -143,22 +142,47 @@ def getambientlightsensor():
         csv_writer.writerow([current_time, lightlevel])
 
 def logcsv():
+    # get light level
     url1 = base + "sensors/5"
-    r1 = requests.get(url1)
-    rjson1 = r1.json()
+    r = requests.get(url1)
+    rjson1 = r.json()
     lightlevel = str(rjson1["state"]["lightlevel"])
+    dark = str(rjson1["state"]["dark"])
+    daylight = str(rjson1["state"]["daylight"])
+    # get movement
     url2 = base + "sensors/4"
+    time.sleep(5)
+    # get movement 0
+    rset0 = requests.put(url2 + "/config/", '{"sensitivity": 0}')
+    rjson0 = rset0.json()
+    print(rjson0)
     r2 = requests.get(url2)
     rjson2 = r2.json()
-    presence = str(rjson2["state"]["presence"])
+    presence0 = str(rjson2["state"]["presence"])
+    time.sleep(5)
+    # get movement 1
+    rset1 = requests.put(url2 + "/config/", '{"sensitivity": 1}')
+    rjson1 = rset1.json()
+    print(rjson1)
+    r3 = requests.get(url2)
+    rjson3 = r3.json()
+    presence1 = str(rjson2["state"]["presence"])
+    # get movement 2
+    time.sleep(5)
+    rset3 = requests.put(url2 + "/config/", '{"sensitivity": 2}')
+    rjson3 = rset3.json()
+    print(rjson3)
+    r4 = requests.get(url2)
+    rjson4 = r4.json()
+    presence2 = str(rjson2["state"]["presence"])
     # get current time
     t = time.localtime()
     current_time = time.strftime("%H:%M:%S", t)
     # save to csv file
     with open('log.csv', 'a', newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',')
-        csv_writer.writerow([current_time, lightlevel, presence])
-    time.sleep(5)
+        csv_writer.writerow([current_time, lightlevel, dark, daylight, presence0, presence1, presence2])
+    print(presence0 + ", " + presence1 + ", " + presence2)
 
 
 def knopjes():
@@ -288,7 +312,8 @@ if __name__ == '__main__':
     # zet kleur
     # setcolor(1, 00)
     # colorcycle()
-    # while True:
+    while True:
         # getambientlightsensor()
         # time.sleep(5)
-    logcsv()
+        logcsv()
+        time.sleep(5)
