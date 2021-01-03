@@ -142,6 +142,24 @@ def getambientlightsensor():
         csv_writer = csv.writer(csv_file, delimiter=',')
         csv_writer.writerow([current_time, lightlevel])
 
+def logcsv():
+    url1 = base + "sensors/5"
+    r1 = requests.get(url1)
+    rjson1 = r1.json()
+    lightlevel = str(rjson1["state"]["lightlevel"])
+    url2 = base + "sensors/4"
+    r2 = requests.get(url2)
+    rjson2 = r2.json()
+    presence = str(rjson2["state"]["presence"])
+    # get current time
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    # save to csv file
+    with open('log.csv', 'a', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter=',')
+        csv_writer.writerow([current_time, lightlevel, presence])
+    time.sleep(5)
+
 
 def knopjes():
     knop = "1"
@@ -256,8 +274,8 @@ if __name__ == '__main__':
     print('LHue ready')
 
     # while True:
-    getmotionsensor()
-    getambientlightsensor()
+    # getmotionsensor()
+    # getambientlightsensor()
     # time.sleep(2)
 
     # knopjes()
@@ -273,3 +291,4 @@ if __name__ == '__main__':
     # while True:
         # getambientlightsensor()
         # time.sleep(5)
+    logcsv()
